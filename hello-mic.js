@@ -3,7 +3,7 @@ const mic = require('mic');
 const { Writable } = require('stream');
 const fs = require('fs')
 
-const THRESHOLD_DB = -100; // Adjust to taste
+const THRESHOLD_DB = -80; // Adjust to taste
 const CHUNK_MS = 100;
 const autoStop = false; // Set to true to stop after 5 seconds
 
@@ -61,12 +61,10 @@ micInputStream.on('data', (data) => {
     // Rough RMS -> dBFS conversion
     const rms = getRms(chunk);
     const db = 20 * Math.log10(rms / 128); // 8-bit PCM center is 128
-    console.log(`RMS: ${rms.toFixed(5)}, dB: ${db.toFixed(5)}`);
+    const overThreshold = db > THRESHOLD_DB;
+    console.log(`RMS: ${rms.toFixed(5)}, dB: ${db.toFixed(5)}${overThreshold ? ' 🎤' : ''}`);
 
     if (db > THRESHOLD_DB) {
-      const ts = new Date().toISOString();
-      console.log(`${ts}: ${db.toFixed(5)} dB`);
-
       // only writing once past a certain threshold
         outputFileStream2.write(chunk);
     }
