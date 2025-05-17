@@ -8,10 +8,10 @@ const CHUNK_MS = 100;
 const autoStop = false; // Set to true to stop after 5 seconds
 
 const micInstance = mic({
-  rate: '16000',
-  channels: '1',
+    //   rate: '48000',
+    channels: '1',
     // debug: !false,
-//   exitOnSilence: 6,
+    //   exitOnSilence: 16,
 });
 
 const micInputStream = micInstance.getAudioStream();
@@ -25,15 +25,15 @@ var outputFileStream2 = fs.WriteStream('output2.raw');
 let buffer = [];
 let lastFlush = Date.now();
 
-micInputStream.on('silence', function() {
+micInputStream.on('silence', function () {
     console.log("Got SIGNAL silence");
 });
 
 const getRms_notworking = (chunk) => {
     let sum = 0;
     for (let i = 0; i < chunk.length; i++) {
-      const val = chunk[i];
-      sum += val * val;
+        const val = chunk[i];
+        sum += val * val;
     }
     const rms = Math.sqrt(sum / chunk.length);
     return rms
@@ -42,33 +42,33 @@ const getRms_notworking = (chunk) => {
 const getRms = (chunk) => {
     let sum = 0;
     for (let i = 0; i < chunk.length; i += 2) {
-    let val = chunk.readInt16LE(i) / 32768; // Normalize to -1.0 to 1.0
-    sum += val * val;
+        let val = chunk.readInt16LE(i) / 32768; // Normalize to -1.0 to 1.0
+        sum += val * val;
     }
     const rms = Math.sqrt(sum / (chunk.length / 2)); // Divide by number of samples
     return rms
 }
 
 micInputStream.on('data', (data) => {
-  buffer.push(data);
+    buffer.push(data);
 
-  const now = Date.now();
-  if (now - lastFlush >= CHUNK_MS) {
-    const chunk = Buffer.concat(buffer);
-    buffer = [];
-    lastFlush = now;
+    const now = Date.now();
+    if (now - lastFlush >= CHUNK_MS) {
+        const chunk = Buffer.concat(buffer);
+        buffer = [];
+        lastFlush = now;
 
-    // Rough RMS -> dBFS conversion
-    const rms = getRms(chunk);
-    const db = 20 * Math.log10(rms / 128); // 8-bit PCM center is 128
-    const overThreshold = db > THRESHOLD_DB;
-    console.log(`RMS: ${rms.toFixed(5)}, dB: ${db.toFixed(5)}${overThreshold ? ' 🎤' : ''}`);
+        // Rough RMS -> dBFS conversion
+        const rms = getRms(chunk);
+        const db = 20 * Math.log10(rms / 128); // 8-bit PCM center is 128
+        const overThreshold = db > THRESHOLD_DB;
+        console.log(`RMS: ${rms.toFixed(5)}, dB: ${db.toFixed(5)}${overThreshold ? ' 🎤' : ''}`);
 
-    if (db > THRESHOLD_DB) {
-      // only writing once past a certain threshold
-        outputFileStream2.write(chunk);
+        if (db > THRESHOLD_DB) {
+            // only writing once past a certain threshold
+            outputFileStream2.write(chunk);
+        }
     }
-  }
 });
 
 
@@ -115,8 +115,20 @@ micInputStream.on('processExitComplete', function () {
 });
 
 
-micInputStream.on('end', () => {
-    console.log("Got SIGNAL end");
-    outputFileStream2.end(); // Make sure to close the stream
-})
+
+// TODO: process.on('SIGTERM', () => {
+
+process.on('SIGINT', () => {
+    console.log('\nGracefully shutting down...');
+
+    // Do any cleanup here
+    micInstance.stop();             // If using mic module
+    outputFileStream.close();       // If writing to a file
+    outputFileStream2?.close();     // Close additional streams
+
+
+    process.exit(0);
+});
+
 micInstance.start();
+
