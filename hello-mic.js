@@ -16,8 +16,6 @@ const micInstance = mic({
 const micInputStream = micInstance.getAudioStream();
 const outputFileStream = fs.WriteStream('output.raw');
 
-let buffer = [];
-let lastFlush = Date.now();
 
 const getRms = (chunk) => {
     let sum = 0;
@@ -35,6 +33,9 @@ const shutdown = () => {
     outputFileStream.close();       // If writing to a file
     process.exit(0);
 }
+
+let buffer = [];
+let lastFlush = Date.now();
 
 const onData = (data) => {
     buffer.push(data);
