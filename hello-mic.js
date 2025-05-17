@@ -5,6 +5,12 @@ const fs = require('fs')
 const THRESHOLD_DB = -80; // Adjust to taste
 const CHUNK_MS = 100;
 const autoStop = false; // Set to true to stop after 5 seconds
+const autoLevel = true; // adjust threshold automatically
+const PERCENTAGE_ABOVE_THRESHOLD = 3; // Percentage above the threshold to trigger recording
+
+// TODO: this should be a percentage of the average, not a fixed value
+const AUTO_THRESHOLD_MARGIN = 2; // how much above the average a sample needs to be to be recorded
+const dbSampleCooldown = 20; // Number of samples to keep for running average
 
 const micInstance = mic({
     //   rate: '48000',
@@ -37,6 +43,19 @@ const shutdown = () => {
 let buffer = [];
 let lastFlush = Date.now();
 
+const dbSamples = []
+let averageDb = 0
+
+const updateRunningDBAverage = (db) => {
+    dbSamples.push(db);
+    // We only want a running average, not a full history.
+    if (dbSamples.length > dbSampleCooldown) {
+        dbSamples.shift();
+    }
+    const sum = dbSamples.reduce((acc, val) => acc + val, 0);
+    return sum / dbSamples.length;
+}
+
 const onData = (data) => {
     buffer.push(data);
     const now = Date.now();
@@ -46,9 +65,22 @@ const onData = (data) => {
         lastFlush = now;
         const rms = getRms(chunk);
         const db = 20 * Math.log10(rms / 128);
-        const overThreshold = db > THRESHOLD_DB;
-        console.log(`RMS: ${rms.toFixed(5)}, dB: ${db.toFixed(5)}${overThreshold ? ' 🎤' : ''}`);
-        if (overThreshold) {
+        const threshold = autoLevel
+            ? averageDb + AUTO_THRESHOLD_MARGIN
+            : THRESHOLD_DB;
+        const percentageAboveThreshold = (db - threshold) / Math.abs(threshold) * 100;
+        averageDb = updateRunningDBAverage(db);
+        const shouldRecord = percentageAboveThreshold > PERCENTAGE_ABOVE_THRESHOLD
+
+        if (percentageAboveThreshold > PERCENTAGE_ABOVE_THRESHOLD) {
+            // console.log("Over threshold");
+        }
+        if (percentageAboveThreshold < 0) {
+            // if we wanted to cool down faster, do it here
+        }
+
+        if (shouldRecord) {
+            console.log(`dB: ${db.toFixed(5)}, threshold: ${threshold.toFixed(5)}, above: ${percentageAboveThreshold}`);
             outputFileStream.write(chunk);
         }
     }
