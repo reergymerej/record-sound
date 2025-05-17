@@ -1,0 +1,19 @@
+{
+  "name": "hello-mic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hello-mic.js",
+  "scripts": {
+    "start": "npm run clear && npm run record && npm run convert && npm run convert2",
+    "record": "node hello-mic.js",
+    "clear": "rm -f *.wav *.raw",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "convert": "sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output.raw output.wav",
+    "convert2": "sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output2.raw output2.wav"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mic": "^2.1.2"
+  }
+}
