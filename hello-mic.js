@@ -34,7 +34,7 @@ const getRms = (chunk) => {
 }
 
 const shutdown = () => {
-    console.log('\nGracefully shutting down...');
+    // console.log('\nGracefully shutting down...');
     micInstance.stop();             // If using mic module
     outputFileStream.close();       // If writing to a file
     process.exit(0);
@@ -80,7 +80,8 @@ const onData = (data) => {
         }
 
         if (shouldRecord) {
-            console.log(`dB: ${db.toFixed(5)}, threshold: ${threshold.toFixed(5)}, above: ${percentageAboveThreshold}`);
+            const ts = new Date(now).toISOString();
+            console.log(`${ts}, dB: ${db.toFixed(5)}, threshold: ${threshold.toFixed(5)}, above: ${percentageAboveThreshold}`);
             outputFileStream.write(chunk);
         }
     }
@@ -89,15 +90,15 @@ const onData = (data) => {
 micInputStream.on('data', onData)
 
 micInputStream.on('silence', function () {
-    console.log("Got SIGNAL silence");
+    // console.log("Got SIGNAL silence");
 });
 
 micInputStream.on('error', function (err) {
-    console.log("Error in Input Stream: " + err);
+    // console.log("Error in Input Stream: " + err);
 });
 
 micInputStream.on('startComplete', function () {
-    console.log("Got SIGNAL startComplete");
+    // console.log("Got SIGNAL startComplete");
     if (autoStop) {
         setTimeout(function () {
             micInstance.stop();
@@ -106,29 +107,29 @@ micInputStream.on('startComplete', function () {
 });
 
 micInputStream.on('stopComplete', function () {
-    console.log("Got SIGNAL stopComplete");
+    // console.log("Got SIGNAL stopComplete");
 });
 
 micInputStream.on('pauseComplete', function () {
-    console.log("Got SIGNAL pauseComplete");
+    // console.log("Got SIGNAL pauseComplete");
     setTimeout(function () {
         micInstance.resume();
     }, 5000);
 });
 
 micInputStream.on('resumeComplete', function () {
-    console.log("Got SIGNAL resumeComplete");
+    // console.log("Got SIGNAL resumeComplete");
     setTimeout(function () {
         micInstance.stop();
     }, 5000);
 });
 
 micInputStream.on('silence', function () {
-    console.log("Got SIGNAL silence");
+    // console.log("Got SIGNAL silence");
 });
 
 micInputStream.on('processExitComplete', function () {
-    console.log("Got SIGNAL processExitComplete");
+    // console.log("Got SIGNAL processExitComplete");
 });
 
 process.on('SIGTERM', shutdown)
