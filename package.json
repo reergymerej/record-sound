@@ -4,12 +4,11 @@
   "description": "",
   "main": "hello-mic.js",
   "scripts": {
-    "start": "npm run clear && npm run record && npm run convert && npm run convert2",
+    "start": "npm run clear && npm run record && npm run convert",
     "record": "node hello-mic.js",
     "clear": "rm -f *.wav *.raw",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "convert": "sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output.raw output.wav",
-    "convert2": "sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output2.raw output2.wav"
+    "convert": "sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output.raw output.wav"
   },
   "author": "",
   "license": "ISC",
