@@ -1,11 +1,12 @@
-# requires
+## requires
 brew install sox
 sudo apt install sox
 
+## convert raw to wav
+./bin/convert yourfile.raw
 
-# convert raw to wav
-sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output.raw output.wav
+## dev
+npm run dev
 
-
-## TODO
-convert to ts
+## start
+npm start
