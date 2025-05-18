@@ -4,14 +4,18 @@
   "description": "",
   "main": "hello-mic.js",
   "scripts": {
-    "start": "npm run clear && npm run record && npm run convert",
-    "record": "node hello-mic.js",
+    "build": "tsc",
+    "start": "npm run clear && npm run record",
+    "record": "node ./out/hello-mic.js",
     "clear": "rm -f *.wav *.raw",
-    "convert": "./convert output.raw"
+    "convert": "./bin/convert output.raw"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "mic": "^2.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18"
   }
 }

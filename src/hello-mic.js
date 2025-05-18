@@ -13,7 +13,7 @@ const AUTO_THRESHOLD_MARGIN = 2; // how much above the average a sample needs to
 const dbSampleCooldown = 20; // Number of samples to keep for running average
 
 const micInstance = mic({
-    //   rate: '48000',
+    rate: '16000',
     channels: '1',
     // debug: !false,
     //   exitOnSilence: 16,
