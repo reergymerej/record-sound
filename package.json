@@ -2,12 +2,12 @@
   "name": "hello-mic",
   "version": "1.0.0",
   "description": "",
-  "main": "hello-mic.js",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
     "start": "npm run clear && npm run record",
-    "record": "node ./out/hello-mic.js",
+    "record": "node ./out/index.js",
     "clear": "rm -f *.wav *.raw",
     "convert": "./bin/convert output.raw",
     "format": "prettier --write src/"
