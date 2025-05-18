@@ -1,9 +1,9 @@
 import fs from 'fs';
 
-const sampleRate = 44100;     // CD quality
-const frequency = 440;        // A4
-const duration = 2;           // seconds
-const amplitude = 0.5;        // 50% of max volume
+const sampleRate = 44100; // CD quality
+const frequency = 440; // A4
+const duration = 2; // seconds
+const amplitude = 0.5; // 50% of max volume
 
 const totalSamples = sampleRate * duration;
 const buffer = Buffer.alloc(totalSamples * 2); // 2 bytes per sample (16-bit)
