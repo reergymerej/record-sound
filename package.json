@@ -7,8 +7,7 @@
     "start": "npm run clear && npm run record && npm run convert",
     "record": "node hello-mic.js",
     "clear": "rm -f *.wav *.raw",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "convert": "sox -t raw -r 16000 -b 16 -c 1 -L -e signed-integer output.raw output.wav"
+    "convert": "./convert output.raw"
   },
   "author": "",
   "license": "ISC",

@@ -34,7 +34,7 @@ const getRms = (chunk) => {
 }
 
 const shutdown = () => {
-    // console.log('\nGracefully shutting down...');
+    console.log('\nGracefully shutting down...');
     micInstance.stop();             // If using mic module
     outputFileStream.close();       // If writing to a file
     process.exit(0);
@@ -56,8 +56,20 @@ const updateRunningDBAverage = (db) => {
     return sum / dbSamples.length;
 }
 
+const inspectBuffer = (buf) => {
+    console.log("Buffer length:", buf.length);
+    const ints = []
+    for (let i = 0; i < buf.length; i += 2) {
+        const sample = buf.readInt16LE(i);
+        ints.push(sample);
+        // console.log(`Sample ${i / 2}:`, sample);
+    }
+    console.log(Math.max(...ints), Math.min(...ints));
+}
+
 const onData = (data) => {
     buffer.push(data);
+
     const now = Date.now();
     if (now - lastFlush >= CHUNK_MS) {
         const chunk = Buffer.concat(buffer);
@@ -65,6 +77,7 @@ const onData = (data) => {
         lastFlush = now;
         const rms = getRms(chunk);
         const db = 20 * Math.log10(rms / 128);
+        // inspectBuffer(chunk);
         const threshold = autoLevel
             ? averageDb + AUTO_THRESHOLD_MARGIN
             : THRESHOLD_DB;
