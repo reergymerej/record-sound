@@ -1,11 +1,14 @@
 export const getRms = (chunk: Buffer): number => {
+  // returns the RMS value of the audio samples in the chunk
+
+  const sampleSize = 2 // 16-bit samples
+  const numberOfSamples = chunk.length / sampleSize
   let sum = 0
-  for (let i = 0; i < chunk.length; i += 2) {
-    let val = chunk.readInt16LE(i) / 32768 // Normalize to -1.0 to 1.0
+  for (let i = 0; i < chunk.length; i += sampleSize) {
+    const val = chunk.readInt16LE(i) / 32768 // Normalize to -1.0 to 1.0
     sum += val * val
   }
-  const rms = Math.sqrt(sum / (chunk.length / 2)) // Divide by number of samples
-  return rms
+  return Math.sqrt(sum / numberOfSamples)
 }
 
 export const getDb = (chunk: Buffer): number => {
