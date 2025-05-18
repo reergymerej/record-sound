@@ -5,6 +5,7 @@
   "main": "hello-mic.js",
   "scripts": {
     "build": "tsc",
+    "dev": "tsc -w",
     "start": "npm run clear && npm run record",
     "record": "node ./out/hello-mic.js",
     "clear": "rm -f *.wav *.raw",

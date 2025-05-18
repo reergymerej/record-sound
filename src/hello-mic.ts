@@ -1,6 +1,5 @@
-// hello-mic.js
-const mic = require('mic');
-const fs = require('fs')
+import mic from 'mic';
+import fs from 'fs';
 
 const THRESHOLD_DB = -80; // Adjust to taste
 const CHUNK_MS = 100;
@@ -20,10 +19,10 @@ const micInstance = mic({
 });
 
 const micInputStream = micInstance.getAudioStream();
-const outputFileStream = fs.WriteStream('output.raw');
+const outputFileStream = fs.createWriteStream('output.raw');
 
 
-const getRms = (chunk) => {
+const getRms = (chunk: Buffer): number => {
     let sum = 0;
     for (let i = 0; i < chunk.length; i += 2) {
         let val = chunk.readInt16LE(i) / 32768; // Normalize to -1.0 to 1.0
@@ -40,13 +39,13 @@ const shutdown = () => {
     process.exit(0);
 }
 
-let buffer = [];
+let buffer: MicData[] = [];
 let lastFlush = Date.now();
 
-const dbSamples = []
+const dbSamples: number[] = []
 let averageDb = 0
 
-const updateRunningDBAverage = (db) => {
+const updateRunningDBAverage = (db: number) => {
     dbSamples.push(db);
     // We only want a running average, not a full history.
     if (dbSamples.length > dbSampleCooldown) {
@@ -56,7 +55,7 @@ const updateRunningDBAverage = (db) => {
     return sum / dbSamples.length;
 }
 
-const inspectBuffer = (buf) => {
+const inspectBuffer = (buf: Buffer) => {
     console.log("Buffer length:", buf.length);
     const ints = []
     for (let i = 0; i < buf.length; i += 2) {
@@ -67,7 +66,8 @@ const inspectBuffer = (buf) => {
     console.log(Math.max(...ints), Math.min(...ints));
 }
 
-const onData = (data) => {
+type MicData = Buffer
+const onData = (data: MicData) => {
     buffer.push(data);
 
     const now = Date.now();
@@ -106,7 +106,7 @@ micInputStream.on('silence', function () {
     // console.log("Got SIGNAL silence");
 });
 
-micInputStream.on('error', function (err) {
+micInputStream.on('error', function (err: Error) {
     // console.log("Error in Input Stream: " + err);
 });
 

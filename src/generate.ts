@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 const sampleRate = 44100;     // CD quality
 const frequency = 440;        // A4
