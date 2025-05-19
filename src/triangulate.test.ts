@@ -4,10 +4,11 @@ type Reference = {
   ts: number
 }
 
-type TimeBetweenReferences = {
+type ReferenceRelations = {
   a: Reference
   b: Reference
   time: number
+  distance?: number
 }
 
 type Info = {
@@ -16,18 +17,29 @@ type Info = {
   deltaAB?: number
   closest?: Reference
   ratioDeltaAB?: number
+  distanceFromBToOrigin?: number
 }
 
-type GetInfoArgs = { a: Reference; b?: Reference; tAB?: TimeBetweenReferences }
-const getInfo = ({ a, b, tAB }: GetInfoArgs): Info => {
+type GetInfoArgs = {
+  a: Reference
+  b?: Reference
+  abRelations?: ReferenceRelations
+}
+const getInfo = ({ a, b, abRelations }: GetInfoArgs): Info => {
   const deltaAB = b ? b.ts - a.ts : undefined
-  const canGetRatio = tAB && b && deltaAB !== undefined
+  const canGetRatio = abRelations && b && deltaAB !== undefined
+  const ratioDeltaAB = canGetRatio ? deltaAB / abRelations.time : undefined
+  const canGetDistanceFromB = ratioDeltaAB && abRelations?.distance
+  const distanceFromBToOrigin = canGetDistanceFromB
+    ? ratioDeltaAB * abRelations?.distance!
+    : undefined
   return {
     tsA: a.ts,
     tsB: b?.ts,
     deltaAB,
     closest: b ? (a.ts < b.ts ? a : b) : undefined,
-    ratioDeltaAB: canGetRatio ? deltaAB / tAB.time : undefined,
+    ratioDeltaAB,
+    distanceFromBToOrigin,
   }
 }
 
@@ -64,33 +76,61 @@ describe('given two points', () => {
     }
     expect(actual).toEqual(expected)
   })
-})
 
-describe('given two points and time (static time between A and B)', () => {
-  it('should have ratio of difference in terms of tAB)', () => {
-    const time = 100
+  describe('and static time between A and B', () => {
+    it('should have ratio of difference in terms of tAB)', () => {
+      const time = 100
+      const a: Reference = {
+        ts: 0,
+      }
+      const b: Reference = {
+        ts: 20,
+      }
+      const abRelations: ReferenceRelations = {
+        a,
+        b,
+        time,
+      }
+      const actual = getInfo({ a, b, abRelations })
+      const expected: Info = {
+        tsA: a.ts,
+        tsB: b.ts,
+        deltaAB: b.ts - a.ts,
+        closest: a,
+        ratioDeltaAB: (b.ts - a.ts) / time,
+      }
+      expect(actual).toEqual(expected)
+    })
 
-    const a: Reference = {
-      ts: 20,
-    }
-    const b: Reference = {
-      ts: 40,
-    }
-    const tAB: TimeBetweenReferences = {
-      a,
-      b,
-      time,
-    }
-    const actual = getInfo({ a, b, tAB })
-    const expected: Info = {
-      tsA: a.ts,
-      tsB: b.ts,
-      deltaAB: b.ts - a.ts,
-      closest: a,
-      ratioDeltaAB: (b.ts - a.ts) / time,
-    }
-
-    console.log('actual', actual)
-    expect(actual).toEqual(expected)
+    describe('and a known distance between A and B', () => {
+      it('should have the distance to origin B', () => {
+        const time = 100
+        const distance = 3 // feet
+        const a: Reference = {
+          ts: 0,
+        }
+        const b: Reference = {
+          ts: 100,
+        }
+        const abRelations: ReferenceRelations = {
+          a,
+          b,
+          time,
+          distance,
+        }
+        const actual = getInfo({ a, b, abRelations })
+        const expected: Info = {
+          tsA: a.ts,
+          tsB: b.ts,
+          deltaAB: b.ts - a.ts,
+          closest: a,
+          ratioDeltaAB: (b.ts - a.ts) / time,
+          distanceFromBToOrigin:
+            // ratioDeltaAB
+            ((b.ts - a.ts) / time) * distance,
+        }
+        expect(actual).toEqual(expected)
+      })
+    })
   })
 })
