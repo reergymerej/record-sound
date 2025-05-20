@@ -12,6 +12,14 @@ const micInstance = mic({
   // [AVFoundation indev @ 0x15be12120] [3] Microsoft Teams Audio"
   // device: 'USBAudio1.0',
   // device: '0'
+  //
+  // run this on linux to find device:
+  // arecord -l
+  // > card 3: Device [USB Composite Device], device 0: USB Audio [USB Audio]
+  // > Subdevices: 1/1
+  // > Subdevice #0: subdevice #0
+  // This means you'd use:
+  // device: 'plughw:3,0'
 })
 
 type OnData = (data: Buffer) => void
