@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# usage: ./convert <input_file> <sample_rate=16000>
+
+input_file=$1
+output_file="${input_file%.*}.wav"
+
+# get sample rate from from argv, default to 16000
+sample_rate=${2:-16000}
+# sample_rate=44100
+
+echo "Converting $input_file to $output_file ($sample_rate Hz)"
+sox -t raw -r $sample_rate -b 16 -c 1 -L -e signed-integer $input_file $output_file
