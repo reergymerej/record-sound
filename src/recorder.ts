@@ -1,11 +1,17 @@
 import mic from 'mic'
-import { start } from 'repl'
 
 const micInstance = mic({
   rate: '16000',
   channels: '1',
-  // debug: !false,
+  debug: true,
   //   exitOnSilence: 16,
+  // [AVFoundation indev @ 0x15be12120] AVFoundation audio devices:
+  // [AVFoundation indev @ 0x15be12120] [0] USBAudio1.0
+  // [AVFoundation indev @ 0x15be12120] [1] MacBook Pro Microphone
+  // [AVFoundation indev @ 0x15be12120] [2] USBAudio1.0
+  // [AVFoundation indev @ 0x15be12120] [3] Microsoft Teams Audio"
+  // device: 'USBAudio1.0',
+  // device: '0'
 })
 
 type OnData = (data: Buffer) => void

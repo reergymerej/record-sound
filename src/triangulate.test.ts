@@ -78,7 +78,7 @@ describe('given two points', () => {
   })
 
   describe('and static time between A and B', () => {
-    it('should have ratio of difference in terms of tAB)', () => {
+    it('should have ratio of difference in terms of time(AB))', () => {
       const time = 100
       const a: Reference = {
         ts: 0,
@@ -110,7 +110,7 @@ describe('given two points', () => {
           ts: 0,
         }
         const b: Reference = {
-          ts: 100,
+          ts: 50,
         }
         const abRelations: ReferenceRelations = {
           a,
