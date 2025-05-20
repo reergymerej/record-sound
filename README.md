@@ -10,3 +10,9 @@ npm run dev
 
 ## start
 npm start
+
+## TODO
+* support multiple inputs concurrently
+* read devices from env var so we don't have to change code
+* add option to skip recording
+* when logging, log input
