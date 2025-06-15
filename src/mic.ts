@@ -50,6 +50,29 @@ const mic = (options: MicOptions): MicInstance => {
     }
   }
 
+  if (isLinux) {
+    // Linux specific implementation
+    const device = options.device || 'default'
+    const audioStream = spawn('arecord', [
+      '-D',
+      device,
+      '-f',
+      'S16_LE',
+      '-r',
+      options.rate || '16000',
+      '-c',
+      options.channels || '1',
+      '-t',
+      'raw',
+    ])
+
+    return {
+      start: () => {},
+      stop: () => {},
+      getAudioStream: () => audioStream.stdout,
+    }
+  }
+
   throw new Error(
     'Unsupported platform. This mic module currently supports only macOS.',
   )
