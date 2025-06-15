@@ -1,9 +1,17 @@
 import mic from 'mic'
 
+// read device from env var
+const device = process.env.INPUT_DEVICE
+const debug = !!process.env.DEBUG
+console.log({ device, debug })
+
 const micInstance = mic({
   rate: '16000',
   channels: '1',
-  debug: true,
+
+  debug,
+  device,
+
   //   exitOnSilence: 16,
   // [AVFoundation indev @ 0x15be12120] AVFoundation audio devices:
   // [AVFoundation indev @ 0x15be12120] [0] USBAudio1.0
