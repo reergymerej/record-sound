@@ -9,7 +9,7 @@ type Env = {
 }
 
 const isCliTrue = (value: string | undefined): boolean => {
-  return value?.match(/^(true|1|yes)$/i) !== null
+  return value?.match(/^(true|1|yes|y)$/i) !== null
 }
 
 const getProcessEnvValue = (

@@ -1,5 +1,5 @@
-import mic from 'mic'
 import env from './env'
+import mic from './mic'
 
 const { INPUT_DEVICE, DEBUG } = env
 
@@ -10,15 +10,6 @@ const micInstance = mic({
   debug: DEBUG,
   device: INPUT_DEVICE,
 
-  //   exitOnSilence: 16,
-  // [AVFoundation indev @ 0x15be12120] AVFoundation audio devices:
-  // [AVFoundation indev @ 0x15be12120] [0] USBAudio1.0
-  // [AVFoundation indev @ 0x15be12120] [1] MacBook Pro Microphone
-  // [AVFoundation indev @ 0x15be12120] [2] USBAudio1.0
-  // [AVFoundation indev @ 0x15be12120] [3] Microsoft Teams Audio"
-  // device: 'USBAudio1.0',
-  // device: '0'
-  //
   // run this on linux to find device:
   // arecord -l
   // > card 3: Device [USB Composite Device], device 0: USB Audio [USB Audio]
