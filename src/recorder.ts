@@ -34,6 +34,7 @@ type OnData = (data: Buffer) => void
 
 export type Recorder = typeof recorder
 
+// TODO: rename, this isn't a recorder, it's a listener for audio data
 const recorder = {
   start: (onData: OnData) => {
     const micInputStream = micInstance.getAudioStream()
