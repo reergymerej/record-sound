@@ -15,7 +15,6 @@ mac: system_profiler SPAudioDataType
 linux: arecord -l
 
 ## TODO
-* set output by env var, record wav and/or log
 * specify inputs through env vars
 * support multiple inputs concurrently
 * read devices from env var so we don't have to change code

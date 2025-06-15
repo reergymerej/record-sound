@@ -1,7 +1,9 @@
+import env from './env'
 import audioListener from './recorder'
 import { getDb, getFlusher } from './util'
 import output, { shutdown as shutdownRecorder } from './output'
 
+// TODO: move to env
 const THRESHOLD_DB = -80
 const FLUSH_RATE = 100 // how often the buffer is flushed
 const autoLevel = true // adjust threshold automatically
