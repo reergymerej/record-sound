@@ -1,6 +1,6 @@
-import fs from 'fs'
-import recorder from './recorder'
-import { getDb, getFlusher, inspectBuffer } from './util'
+import audioListener from './recorder'
+import { getDb, getFlusher } from './util'
+import output, { shutdown as shutdownRecorder } from './output'
 
 const THRESHOLD_DB = -80
 const FLUSH_RATE = 100 // how often the buffer is flushed
@@ -20,24 +20,6 @@ const updateRunningDBAverage = (db: number) => {
   }
   const sum = dbSamples.reduce((acc, val) => acc + val, 0)
   return sum / dbSamples.length
-}
-
-const outputFileStream = fs.createWriteStream('output.raw')
-
-type OutputData = {
-  chunk: Buffer
-  db: number
-  now: number
-  percentageAboveThreshold: number
-  threshold: number
-}
-const output = (outputData: OutputData) => {
-  const { chunk, now, db, threshold, percentageAboveThreshold } = outputData
-  const ts = new Date(now).toISOString()
-  console.log(
-    `${ts}, dB: ${db.toFixed(5)}, threshold: ${threshold.toFixed(5)}, above: ${percentageAboveThreshold}`,
-  )
-  outputFileStream.write(chunk)
 }
 
 const onData = getFlusher(FLUSH_RATE, (chunk: Buffer, now: number) => {
@@ -67,12 +49,12 @@ const onData = getFlusher(FLUSH_RATE, (chunk: Buffer, now: number) => {
   }
 })
 
-const stopRecorder = recorder.start(onData)
+const stopAudioListener = audioListener.start(onData)
 
 const shutdown = () => {
   console.log('\nGracefully shutting down...')
-  stopRecorder()
-  outputFileStream.close() // If writing to a file
+  stopAudioListener()
+  shutdownRecorder()
   process.exit(0)
 }
 process.on('SIGTERM', shutdown)

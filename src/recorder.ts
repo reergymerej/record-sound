@@ -1,6 +1,7 @@
 import mic from 'mic'
 
 // read device from env var
+// TODO: move to env file
 const device = process.env.INPUT_DEVICE
 const debug = !!process.env.DEBUG
 console.log({ device, debug })
