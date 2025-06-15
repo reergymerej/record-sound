@@ -24,6 +24,22 @@ const updateRunningDBAverage = (db: number) => {
 
 const outputFileStream = fs.createWriteStream('output.raw')
 
+type OutputData = {
+  chunk: Buffer
+  db: number
+  now: number
+  percentageAboveThreshold: number
+  threshold: number
+}
+const output = (outputData: OutputData) => {
+  const { chunk, now, db, threshold, percentageAboveThreshold } = outputData
+  const ts = new Date(now).toISOString()
+  console.log(
+    `${ts}, dB: ${db.toFixed(5)}, threshold: ${threshold.toFixed(5)}, above: ${percentageAboveThreshold}`,
+  )
+  outputFileStream.write(chunk)
+}
+
 const onData = getFlusher(FLUSH_RATE, (chunk: Buffer, now: number) => {
   const db = getDb(chunk)
   // inspectBuffer(buffer)
@@ -41,11 +57,13 @@ const onData = getFlusher(FLUSH_RATE, (chunk: Buffer, now: number) => {
   }
 
   if (shouldRecord) {
-    const ts = new Date(now).toISOString()
-    console.log(
-      `${ts}, dB: ${db.toFixed(5)}, threshold: ${threshold.toFixed(5)}, above: ${percentageAboveThreshold}`,
-    )
-    outputFileStream.write(chunk)
+    output({
+      chunk,
+      now,
+      db,
+      threshold,
+      percentageAboveThreshold,
+    })
   }
 })
 
